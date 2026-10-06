@@ -69,7 +69,7 @@ Never commit `.env` files, database dumps, provider keys, session secrets, OAuth
 
 ## License
 
-QNL Command Centre is source-available under the [QNL Command Centre Non-Commercial Source-Available License](./LICENSE).
+QNL Command Centre is source-available under the [QNL Command Centre Non-Commercial Source-Available License](./LICENSE.md).
 
 You may view, download, modify, and use the software for personal, educational, research, and internal organizational purposes.
 
