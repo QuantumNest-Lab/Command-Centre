@@ -1,0 +1,16 @@
+[
+  { "id": "dashboard", "label": "Command Centre" },
+  { "id": "clients", "label": "Clients", "group": "Workspace" },
+  { "id": "projects", "label": "Projects" },
+  { "id": "requirements", "label": "Requirements" },
+  { "id": "tasks", "label": "Tasks" },
+  { "id": "activity", "label": "Activity" },
+  { "id": "drive", "label": "Drive" },
+  { "id": "meetings", "label": "Meetings" },
+  { "id": "calendar", "label": "Calendar" },
+  { "id": "documents", "label": "Documents", "group": "Operations", "children": ["quotations", "invoices", "bills", "approvals", "proposals", "contracts"] },
+  { "id": "finance", "label": "Finance", "children": ["receivables", "payments", "expenses"] },
+  { "id": "approvals", "label": "Approvals" },
+  { "id": "team", "label": "Team", "group": "Manage" },
+  { "id": "settings", "label": "Settings", "children": ["company", "billing", "storage", "integrations", "team", "security", "appearance"] }
+]

@@ -1,0 +1,29 @@
+# Publish only the root README; internal Markdown stays local.
+*.md
+!/README.md
+
+# Secrets and local environment configuration
+**/.env
+**/.env.*
+!**/.env.example
+!**/.env.test.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+
+# Dependencies and build output
+**/node_modules/
+**/.next/
+**/dist/
+**/coverage/
+
+# Local tooling and operating-system files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+.vercel/
+.snowflake/
+.v0-trash/

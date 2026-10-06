@@ -1,0 +1,12 @@
+/** Canonical QNL RBAC catalogue. Kept framework-free so Express imports this exact policy too. */
+export const ROLES = ['OWNER', 'ADMIN', 'MANAGER', 'MEMBER'] as const
+export type Role = typeof ROLES[number]
+export const PERMISSIONS = ['clients.view', 'clients.create', 'clients.edit', 'clients.archive', 'clients.assign', 'clients.view_all', 'projects.view', 'projects.create', 'projects.edit', 'projects.archive', 'projects.assign', 'projects.view_all', 'requirements.view', 'requirements.create', 'requirements.edit', 'requirements.archive', 'requirements.assign', 'tasks.view', 'tasks.create', 'tasks.edit', 'tasks.complete', 'tasks.assign', 'tasks.archive', 'tasks.view_all', 'activity.view', 'drive.view', 'drive.upload', 'drive.create_folder', 'drive.rename', 'drive.move', 'drive.delete', 'drive.manage', 'meetings.view', 'meetings.create', 'meetings.edit', 'meetings.cancel', 'documents.view', 'documents.create', 'documents.edit', 'documents.delete', 'finance.view', 'finance.create', 'finance.edit', 'finance.approve', 'finance.export', 'approvals.view', 'approvals.request', 'approvals.approve', 'approvals.reject', 'team.view', 'team.invite', 'team.edit_role', 'team.suspend', 'team.remove', 'settings.view', 'settings.edit', 'settings.security', 'settings.integrations'] as const
+export type Permission = typeof PERMISSIONS[number]
+const all: readonly Permission[] = PERMISSIONS
+export const ROLE_PERMISSIONS: Record<Role, readonly Permission[]> = {
+  OWNER: all,
+  ADMIN: all.filter(permission => !['settings.security', 'settings.integrations'].includes(permission)),
+  MANAGER: ['clients.view', 'clients.create', 'clients.edit', 'clients.assign', 'clients.view_all', 'projects.view', 'projects.create', 'projects.edit', 'projects.assign', 'projects.view_all', 'requirements.view', 'requirements.create', 'requirements.edit', 'requirements.assign', 'tasks.view', 'tasks.create', 'tasks.edit', 'tasks.complete', 'tasks.assign', 'tasks.view_all', 'activity.view', 'drive.view', 'drive.upload', 'drive.create_folder', 'drive.rename', 'meetings.view', 'meetings.create', 'meetings.edit', 'documents.view', 'documents.create', 'documents.edit', 'finance.view', 'approvals.view', 'approvals.request', 'settings.view'],
+  MEMBER: ['clients.view', 'projects.view', 'requirements.view', 'requirements.create', 'tasks.view', 'tasks.create', 'tasks.edit', 'tasks.complete', 'activity.view', 'drive.view', 'drive.upload', 'meetings.view', 'meetings.create', 'documents.view', 'finance.view', 'approvals.view', 'approvals.request', 'settings.view'],
+}

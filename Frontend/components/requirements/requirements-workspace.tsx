@@ -1,0 +1,29 @@
+'use client'
+
+import { BriefcaseBusiness, ChevronDown, Folder, LayoutDashboard, ListTodo, Plus } from 'lucide-react'
+import { Fragment, useMemo, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import type { Project } from '@/lib/qnl-mock'
+import { Button } from '@/components/ui/button'
+import { DataTable, EmptyState, ErrorState, LoadingSkeleton } from '@/components/ui/feedback'
+import { FormSelect } from '@/components/ui/form-select'
+import { StatusBadge } from '@/components/ui/status-badge'
+
+export type RequirementRow = { id:string; code?:string; title:string; client:string; project:string; status:string; priority?:string; owner:string }
+type Props = { rows:RequirementRow[]; projects:Project[]; onOpen:(id:string)=>void; onCreate:()=>void; loading?:boolean; error?:string; onRetry?:()=>void }
+
+export function RequirementsWorkspace({ rows: sourceRows, onOpen, onCreate, loading = false, error = '', onRetry }: Props) {
+  const params = useSearchParams(), router = useRouter(), clientParam = params.get('client') || ''
+  const view = params.get('view') === 'board' ? 'board' : 'list'
+  const [search, setSearch] = useState(''), [client, setClient] = useState(clientParam), [project, setProject] = useState(''), [status, setStatus] = useState('')
+  const [collapsed, setCollapsed] = useState<Record<string, boolean>>({})
+  const rows = sourceRows.filter(row => (!client || row.client === client) && (!project || row.project === project) && (!status || row.status === status) && Object.values(row).join(' ').toLowerCase().includes(search.toLowerCase()))
+  const groups = useMemo(() => Array.from(rows.reduce((map, row) => { const name = row.project || 'Unassigned requirements'; map.set(name, [...(map.get(name) || []), row]); return map }, new Map<string, RequirementRow[]>())), [rows])
+  const allCollapsed = groups.length > 0 && groups.every(([name]) => collapsed[name])
+  const clients = [...new Set(sourceRows.map(row => row.client))], projects = [...new Set(sourceRows.map(row => row.project))], statuses = [...new Set(sourceRows.map(row => row.status))]
+  const changeView = (next: 'list' | 'board') => router.push(`/requirements?${new URLSearchParams({ ...(clientParam ? { client: clientParam } : {}), view: next })}`)
+  const clear = () => { setSearch(''); setClient(clientParam); setProject(''); setStatus('') }
+  const toggleAll = () => setCollapsed(Object.fromEntries(groups.map(([name]) => [name, !allCollapsed])))
+  const filters = <><FormSelect icon={<BriefcaseBusiness size={14}/>} ariaLabel="Filter requirements by client" value={client} options={[{ value:'', label:'All clients' }, ...clients.map(value => ({ value, label:value }))]} onChange={setClient}/><FormSelect icon={<BriefcaseBusiness size={14}/>} ariaLabel="Filter requirements by project" value={project} options={[{ value:'', label:'All projects' }, ...projects.map(value => ({ value, label:value }))]} onChange={setProject}/><FormSelect icon={<BriefcaseBusiness size={14}/>} ariaLabel="Filter requirements by status" value={status} options={[{ value:'', label:'All statuses' }, ...statuses.map(value => ({ value, label:value }))]} onChange={setStatus}/></>
+  return <section className="requirements-workspace"><div className="module-toolbar requirements-toolbar"><div className="search-box"><input value={search} onChange={event => setSearch(event.target.value)} placeholder="Search requirements"/></div><div className="requirements-filters">{filters}</div><Button variant="ghost" size="sm" onClick={clear}>Clear filters</Button><Button variant="ghost" size="sm" onClick={toggleAll}>{allCollapsed ? 'Expand all' : 'Collapse all'}</Button><div className="requirements-view-toggle"><Button variant={view === 'list' ? 'default' : 'outline'} size="icon-sm" onClick={() => changeView('list')} aria-label="List view"><ListTodo size={15}/></Button><Button variant={view === 'board' ? 'default' : 'outline'} size="icon-sm" onClick={() => changeView('board')} aria-label="Board view"><LayoutDashboard size={15}/></Button></div><Button onClick={onCreate}><Plus size={15}/>New requirement</Button></div>{loading ? <LoadingSkeleton label="Loading requirements"/> : error ? <ErrorState detail={error} onRetry={onRetry}/> : !sourceRows.length ? <EmptyState title="No requirements yet" detail="Create a requirement to get started." action={{ label:'New requirement', onClick:onCreate }}/> : !rows.length ? <EmptyState title="No requirements match these filters" detail="Clear filters to see all requirements." action={{ label:'Clear filters', onClick:clear }}/> : view === 'board' ? <div className="requirements-project-grid">{groups.map(([name, items]) => <button className="requirements-project-card" key={name} onClick={() => onOpen(items[0].id)}><strong>{name}</strong><span>{items.length} requirements</span><StatusBadge status={items[0].status}/></button>)}</div> : <DataTable className="requirements-table-panel"><table><thead><tr><th>ID</th><th>Requirement</th><th>Client / Project</th><th>Status</th><th>Priority</th><th>Owner</th></tr></thead><tbody>{groups.map(([name, items]) => <Fragment key={name}><tr className="requirements-project-folder"><td colSpan={5}><Button variant="ghost" size="sm" onClick={() => setCollapsed(current => ({ ...current, [name]: !current[name] }))} aria-expanded={!collapsed[name]}><Folder size={15}/>{name}<ChevronDown size={15}/></Button></td><td>{items.length} requirements</td></tr>{!collapsed[name] && items.map(row => <tr className="requirement-record" key={row.id} onClick={() => onOpen(row.id)}><td>{row.code || row.id}</td><td>{row.title}</td><td>{row.client}<span className="subline">{row.project}</span></td><td><StatusBadge status={row.status}/></td><td>{row.priority || 'Not set'}</td><td>{row.owner}</td></tr>)}</Fragment>)}</tbody></table></DataTable>}</section>
+}

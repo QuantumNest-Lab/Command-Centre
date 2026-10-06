@@ -1,0 +1,9 @@
+{
+  "name": "qnl-command-centre-api",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": { "dev": "node --env-file=.env --import tsx --watch src/index.ts", "start": "node --env-file=.env --import tsx src/index.ts", "typecheck": "tsc --noEmit", "db:test:setup": "node --env-file=.env --env-file-if-exists=.env.test scripts/setup-test-db.mjs", "test:security": "node --env-file=.env --env-file-if-exists=.env.test test/security.integration.mjs" },
+  "dependencies": { "bcryptjs": "^3.0.3", "cors": "^2.8.5", "express": "^5.1.0", "jose": "^6.2.12", "postgres": "^3.4.9", "zod": "^4.6.2" },
+  "devDependencies": { "@types/cors": "^2.8.19", "@types/express": "^5.0.3", "@types/node": "^24.0.0", "tsx": "^4.20.0", "typescript": "^5.7.3" }
+}
